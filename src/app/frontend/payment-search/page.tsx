@@ -11,7 +11,7 @@ interface Payment {
   method: string;
   bank?: string;
   status: string;
-  transactionId?: string;
+  transactionId: string;
   verificationCode?: string;
   paidAt?: string;
   expiresAt?: string;
@@ -22,7 +22,23 @@ interface Payment {
     totalAmount: number;
     status: string;
     createdAt: string;
-    items: any[];
+    items: Array<{
+      id: number;
+      productId: number;
+      quantity: number;
+      price: number;
+      product: {
+        id: number;
+        name: string;
+        price: number;
+        image: string;
+        user?: {
+          id: number;
+          name: string;
+          email: string;
+        };
+      };
+    }>;
   };
 }
 
@@ -398,7 +414,7 @@ export default function PaymentSearchPage() {
                 <PaymentReceipt
                   payment={payment}
                   order={payment.order}
-                  user={payment.order.items[0].product.user}
+                  user={payment.order.items[0]?.product?.user}
                 />
               </div>
             </div>
