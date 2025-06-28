@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE `user` ADD COLUMN `address` VARCHAR(191) NULL,
+    ADD COLUMN `birthDate` DATETIME(3) NULL,
+    ADD COLUMN `isActive` BOOLEAN NOT NULL DEFAULT true,
+    ADD COLUMN `isAdmin` BOOLEAN NOT NULL DEFAULT false,
+    ADD COLUMN `profilePicture` VARCHAR(191) NULL;
