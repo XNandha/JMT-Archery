@@ -3,42 +3,17 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PaymentReceipt from "@/app/components/PaymentReceipt";
+import { Payment as BasePayment, OrderItem } from "@/types/payment";
 
-interface Payment {
-  id: number;
-  orderId: number;
-  amount: number;
-  method: string;
-  bank?: string;
-  status: string;
-  transactionId: string;
-  verificationCode?: string;
-  paidAt?: string;
-  expiresAt?: string;
-  createdAt: string;
+// Extended Payment interface for payment-search that includes order data
+interface PaymentWithOrder extends BasePayment {
   order: {
     id: number;
     userId: number;
     totalAmount: number;
     status: string;
     createdAt: string;
-    items: Array<{
-      id: number;
-      productId: number;
-      quantity: number;
-      price: number;
-      product: {
-        id: number;
-        name: string;
-        price: number;
-        image: string;
-        user?: {
-          id: number;
-          name: string;
-          email: string;
-        };
-      };
-    }>;
+    items: OrderItem[];
   };
 }
 
@@ -47,7 +22,7 @@ export default function PaymentSearchPage() {
   const [searchValue, setSearchValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [payment, setPayment] = useState<Payment | null>(null);
+  const [payment, setPayment] = useState<PaymentWithOrder | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginNotification, setShowLoginNotification] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
@@ -412,7 +387,10 @@ export default function PaymentSearchPage() {
               </div>
               <div className="p-4">
                 <PaymentReceipt
-                  payment={payment}
+                  payment={{
+                    ...payment,
+                    transactionId: payment.transactionId || ""
+                  }}
                   order={payment.order}
                   user={payment.order.items[0]?.product?.user}
                 />

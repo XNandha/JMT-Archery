@@ -1,42 +1,7 @@
 "use client";
 
 import React from "react";
-
-interface PaymentReceiptProps {
-  payment: {
-    id: number;
-    transactionId: string;
-    amount: number;
-    method: string;
-    bank?: string;
-    status: string;
-    paidAt?: string;
-    createdAt: string;
-  };
-  order: {
-    id: number;
-    totalAmount: number;
-    status: string;
-    createdAt: string;
-    items: Array<{
-      id: number;
-      productId: number;
-      quantity: number;
-      price: number;
-      product: {
-        id: number;
-        name: string;
-        price: number;
-        image: string;
-      };
-    }>;
-  };
-  user?: {
-    id: number;
-    name: string;
-    email: string;
-  };
-}
+import { PaymentReceiptProps } from "@/types/payment";
 
 export default function PaymentReceipt({ payment, order, user }: PaymentReceiptProps) {
   const formatDate = (dateString: string) => {

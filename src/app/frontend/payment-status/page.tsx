@@ -3,49 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PaymentReceipt from "@/app/components/PaymentReceipt";
-
-interface OrderItem {
-  id: number;
-  productId: number;
-  quantity: number;
-  price: number;
-  product: {
-    id: number;
-    name: string;
-    price: number;
-    image: string;
-  };
-}
-
-interface Payment {
-  id: number;
-  orderId: number;
-  amount: number;
-  method: string;
-  bank?: string;
-  status: string;
-  transactionId?: string;
-  verificationCode?: string;
-  paidAt?: string;
-  expiresAt?: string;
-  createdAt: string;
-}
-
-interface Order {
-  id: number;
-  userId: number;
-  totalAmount: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  items: OrderItem[];
-  payments: Payment[];
-  user?: {
-    id: number;
-    name: string;
-    email: string;
-  };
-}
+import { Payment, Order, OrderItem } from "@/types/payment";
 
 export default function PaymentStatusPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -407,7 +365,10 @@ export default function PaymentStatusPage() {
               </div>
               <div className="p-4">
                 <PaymentReceipt
-                  payment={selectedPayment}
+                  payment={{
+                    ...selectedPayment,
+                    transactionId: selectedPayment.transactionId || ""
+                  }}
                   order={selectedOrder}
                   user={selectedOrder.user}
                 />
