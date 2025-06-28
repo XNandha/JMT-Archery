@@ -9,6 +9,7 @@
     "lint": "next lint",
     "deploy": "bash scripts/deploy.sh",
     "test-build": "bash scripts/test-build.sh",
+    "test-build-local": "bash scripts/test-build-local.sh",
     "generate-secrets": "node scripts/generate-secrets.js",
     "test-db": "node scripts/test-db.js",
     "db:generate": "prisma generate",

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { safeDbOperation } from "@/lib/db";
 import nodemailer from "nodemailer";
 
 // Simpan kode reset sementara di memory (untuk demo, gunakan Redis/DB di production)
@@ -33,14 +34,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email atau No HP wajib diisi" }, { status: 400 });
     }
 
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: contact },
-          { phone: contact },
-        ],
-      },
+    // Use safe database operation
+    const result = await safeDbOperation(async () => {
+      return await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: contact },
+            { phone: contact },
+          ],
+        },
+      });
     });
+
+    if (!result.success) {
+      return NextResponse.json({ 
+        error: "Database connection error. Please try again later." 
+      }, { status: 503 });
+    }
+
+    const user = result.data;
 
     if (!user) {
       return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 });
