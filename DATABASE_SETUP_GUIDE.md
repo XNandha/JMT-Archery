@@ -43,7 +43,7 @@ Buat file `.env` di root project (sejajar dengan `package.json`) dengan isi:
 
 ```env
 # Database Configuration
-DATABASE_URL="mysql://username:password@aws.connect.psdb.cloud/jmt_archery?sslaccept=strict"
+DATABASE_URL="postgresql://postgres:passwordANDA@db.ygqnzarecrqkzcjoayvk.supabase.co:5432/postgres"
 
 # JWT Configuration
 JWT_SECRET="your-super-secret-jwt-key-here"
