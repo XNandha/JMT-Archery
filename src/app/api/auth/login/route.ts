@@ -40,6 +40,7 @@ export async function POST(req: Request) {
       email: user.email,
       name: user.name,
       profilePic: user.profilePicture || "",
+      isAdmin: user.isAdmin,
       // tambahkan field lain jika perlu
     };
 
