@@ -128,4 +128,35 @@ console.log('- Pilih region Asia Pacific untuk performa terbaik');
 console.log('- Backup connection string dengan aman');
 console.log('- Restart terminal setelah install Node.js\n');
 
-console.log('🚀 Setelah setup lengkap, database akan terkonfigurasi dan tabel akan terbuat!'); 
+console.log('🚀 Setelah setup lengkap, database akan terkonfigurasi dan tabel akan terbuat!');
+
+// Script untuk menambah admin user
+if (require.main === module && process.argv.includes('--seed-admin')) {
+  const { PrismaClient } = require('@prisma/client');
+  const bcrypt = require('bcryptjs');
+  const prisma = new PrismaClient();
+
+  async function seedAdmin() {
+    const email = 'fernandha.1976@gmail.com';
+    const password = 'admin123';
+    const name = 'Admin';
+    const hashed = await bcrypt.hash(password, 10);
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      console.log('✅ Admin user already exists.');
+      process.exit(0);
+    }
+    await prisma.user.create({
+      data: {
+        email,
+        password: hashed,
+        name,
+        isAdmin: true,
+        isActive: true,
+      },
+    });
+    console.log('✅ Admin user created!');
+    process.exit(0);
+  }
+  seedAdmin();
+} 

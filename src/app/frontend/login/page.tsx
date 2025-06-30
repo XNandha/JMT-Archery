@@ -84,6 +84,12 @@ const AuthCard = () => {
       // Simpan data user ke sessionStorage (opsional)
       sessionStorage.setItem("userData", JSON.stringify(data.user));
 
+      // Redirect ke halaman admin jika user adalah admin
+      if (data.user && data.user.isAdmin) {
+        router.push("/frontend/admin");
+        return;
+      }
+
       // Redirect ke halaman marketplace atau redirectAfterLogin jika ada
       const redirect = sessionStorage.getItem("redirectAfterLogin");
       if (redirect) {
