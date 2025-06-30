@@ -23,29 +23,54 @@ if (!DATABASE_URL) {
 } else {
   // Create real Prisma client for runtime
   prisma = globalForPrisma.prisma || new PrismaClient({
-    log: ['query', 'info', 'warn', 'error'],
+    log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
     errorFormat: 'pretty',
+    datasources: {
+      db: {
+        url: DATABASE_URL,
+      },
+    },
   });
 }
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
-// Only connect to database if DATABASE_URL is available and we're not in build time
-if (DATABASE_URL && process.env.NODE_ENV !== 'production') {
-  prisma.$connect()
-    .then(() => {
-      console.log('✅ Database connected successfully');
-      console.log('📍 Connected to:', DATABASE_URL.split('@')[1]?.split('/')[0] || 'unknown host');
-    })
-    .catch((error) => {
-      console.error('❌ Database connection failed:', error);
-      console.error('🔧 Please check your DATABASE_URL configuration');
-    });
+// Test database connection
+const testConnection = async () => {
+  if (!DATABASE_URL) {
+    console.log('🚫 Skipping database connection test - DATABASE_URL not set');
+    return;
+  }
+
+  try {
+    await prisma.$connect();
+    console.log('✅ Database connected successfully');
+    console.log('📍 Connected to:', DATABASE_URL.split('@')[1]?.split('/')[0] || 'unknown host');
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    console.error('🔧 Please check your DATABASE_URL configuration');
+  }
+};
+
+// Only test connection in development or when explicitly requested
+if (process.env.NODE_ENV === 'development') {
+  testConnection();
 }
 
 // Graceful shutdown
 process.on('beforeExit', async () => {
   await prisma.$disconnect();
+});
+
+// Handle process termination
+process.on('SIGINT', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
 });
 
 export { prisma };

@@ -7,7 +7,10 @@ export async function checkDatabaseConnection() {
     return { connected: true };
   } catch (error) {
     console.error('Database connection failed:', error);
-    return { connected: false, error: error.message };
+    return { 
+      connected: false, 
+      error: error instanceof Error ? error.message : 'Unknown database error' 
+    };
   }
 }
 
@@ -19,11 +22,13 @@ export async function safeDbOperation<T>(
   try {
     const data = await operation();
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Database operation failed:', error);
     
     // Check if it's a connection error
-    if (error.message?.includes('DATABASE_URL') || error.message?.includes('localhost')) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    if (errorMessage.includes('DATABASE_URL') || errorMessage.includes('localhost')) {
       return { 
         success: false, 
         error: 'Database connection not configured. Please set DATABASE_URL environment variable.' 
@@ -32,7 +37,7 @@ export async function safeDbOperation<T>(
     
     return { 
       success: false, 
-      error: error.message || 'Database operation failed',
+      error: errorMessage,
       data: fallback 
     };
   }
@@ -58,11 +63,12 @@ export async function getDatabaseStatus() {
       message: 'Database connected successfully',
       userCount
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return {
       status: 'error',
       message: 'Database query failed',
-      error: error.message
+      error: errorMessage
     };
   }
 } 

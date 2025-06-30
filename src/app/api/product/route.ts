@@ -3,6 +3,15 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
+    // Check if database is connected
+    if (!process.env.DATABASE_URL) {
+      console.error("DATABASE_URL not configured");
+      return NextResponse.json(
+        { error: "Database not configured" }, 
+        { status: 500 }
+      );
+    }
+
     const products = await prisma.product.findMany({
       select: {
         id: true,
@@ -15,10 +24,32 @@ export async function GET() {
         updatedAt: true,
       },
     });
+    
+    console.log(`✅ Successfully fetched ${products.length} products`);
     return NextResponse.json(products);
   } catch (error) {
-    console.error("Error fetch product:", error);
-    return NextResponse.json({ error: "Gagal mengambil produk" }, { status: 500 });
+    console.error("Error fetching products:", error);
+    
+    // Handle specific Prisma errors
+    if (error instanceof Error) {
+      if (error.message.includes('P1001') || error.message.includes('connect')) {
+        return NextResponse.json(
+          { error: "Database connection failed" }, 
+          { status: 503 }
+        );
+      }
+      if (error.message.includes('P2025') || error.message.includes('not found')) {
+        return NextResponse.json(
+          { error: "Products not found" }, 
+          { status: 404 }
+        );
+      }
+    }
+    
+    return NextResponse.json(
+      { error: "Internal server error" }, 
+      { status: 500 }
+    );
   }
 }
 
@@ -57,8 +88,28 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, product: newProduct });
-  } catch (err) {
-    console.error("POST /api/product error:", err);
-    return NextResponse.json({ error: "Gagal menyimpan produk" }, { status: 500 });
+  } catch (error) {
+    console.error("POST /api/product error:", error);
+    
+    // Handle specific Prisma errors
+    if (error instanceof Error) {
+      if (error.message.includes('P1001') || error.message.includes('connect')) {
+        return NextResponse.json(
+          { error: "Database connection failed" }, 
+          { status: 503 }
+        );
+      }
+      if (error.message.includes('P2002') || error.message.includes('unique')) {
+        return NextResponse.json(
+          { error: "Product already exists" }, 
+          { status: 409 }
+        );
+      }
+    }
+    
+    return NextResponse.json(
+      { error: "Internal server error" }, 
+      { status: 500 }
+    );
   }
 }

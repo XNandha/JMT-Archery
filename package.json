@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "test-typescript": "bash scripts/test-typescript.sh",
     "deploy": "bash scripts/deploy.sh",
     "test-build": "bash scripts/test-build.sh",
     "test-build-local": "bash scripts/test-build-local.sh",
