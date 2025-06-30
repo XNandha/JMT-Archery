@@ -13,6 +13,7 @@
     "test-build": "bash scripts/test-build.sh",
     "test-build-local": "bash scripts/test-build-local.sh",
     "generate-secrets": "node scripts/generate-secrets.js",
+    "setup-env": "node scripts/setup-env.js",
     "test-db": "node scripts/test-db.js",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
