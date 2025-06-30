@@ -14,6 +14,8 @@
     "test-build-local": "bash scripts/test-build-local.sh",
     "generate-secrets": "node scripts/generate-secrets.js",
     "setup-env": "node scripts/setup-env.js",
+    "setup-supabase": "node scripts/setup-supabase.js",
+    "setup-database": "node scripts/setup-database.js",
     "test-db": "node scripts/test-db.js",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
