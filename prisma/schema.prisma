@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,7 +18,7 @@ model User {
   password       String
   name           String?
   address        String?
-  profilePicture String?     @db.LongText
+  profilePicture String?
   isAdmin        Boolean     @default(false)
   isActive       Boolean     @default(true)
   birthDate      DateTime?
@@ -108,16 +108,16 @@ model Payment {
   id              Int       @id @default(autoincrement())
   orderId         Int
   amount          Int
-  method          String    // Payment method (dana, gopay, transfer_bank, etc.)
-  bank            String?   // Bank name for bank transfers
-  status          String    @default("pending") // pending, processing, success, failed, expired
-  transactionId   String?   @unique // Unique transaction ID from payment gateway
-  gatewayResponse String?   @db.LongText // Raw response from payment gateway
-  verificationCode String?  // For manual verification
+  method          String
+  bank            String?
+  status          String    @default("pending")
+  transactionId   String?   @unique
+  gatewayResponse String?
+  verificationCode String?
   paidAt          DateTime?
-  expiresAt       DateTime? // Payment expiration time
+  expiresAt       DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   
   order           Order     @relation(fields: [orderId], references: [id])
-}
+} 
