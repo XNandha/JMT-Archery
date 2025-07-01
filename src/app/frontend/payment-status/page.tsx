@@ -16,7 +16,8 @@ export default function PaymentStatusPage() {
   const [showLoginNotification, setShowLoginNotification] = useState(false);
   const router = useRouter();
 
-  const userId = typeof window !== "undefined" ? Number(sessionStorage.getItem("userId") || 1) : 1;
+  // Ambil userId dari sessionStorage
+  const userId = typeof window !== "undefined" ? Number(sessionStorage.getItem("userId")) : undefined;
 
   // Check login status on component mount
   useEffect(() => {
@@ -24,8 +25,8 @@ export default function PaymentStatusPage() {
       if (typeof window !== "undefined") {
         const isLoggedInSession = sessionStorage.getItem("isLoggedIn") === "true";
         const loginTime = sessionStorage.getItem("loginTime");
-        
-        if (isLoggedInSession && loginTime) {
+        const uid = sessionStorage.getItem("userId");
+        if (isLoggedInSession && loginTime && uid && !isNaN(Number(uid)) && Number(uid) > 0) {
           const now = Date.now();
           const loginTimestamp = parseInt(loginTime, 10);
           if (now - loginTimestamp > 3600000) {
@@ -50,6 +51,11 @@ export default function PaymentStatusPage() {
 
   useEffect(() => {
     if (isLoggedIn) {
+      if (!userId || isNaN(userId) || userId <= 0) {
+        setError("User tidak valid. Silakan login ulang.");
+        setLoading(false);
+        return;
+      }
       fetchOrders();
     } else {
       setLoading(false);
