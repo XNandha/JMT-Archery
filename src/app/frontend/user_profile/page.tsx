@@ -157,7 +157,7 @@ const UserProfile: React.FC = () => {
             <div className="bg-gray-200 flex items-center justify-center rounded-full w-56 h-56 mb-6 overflow-hidden">
               {preview ? (
                 <img
-                  src={preview}
+                  src={preview.replace('http://', 'https://')}
                   alt="Profile"
                   className="object-cover w-56 h-56"
                 />

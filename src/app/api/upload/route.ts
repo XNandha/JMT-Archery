@@ -34,8 +34,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Upload ke Cloudinary gagal" }, { status: 500 });
     }
 
+    // Pastikan url selalu https
+    let imageUrl = result.url;
+    if (imageUrl && imageUrl.startsWith('http://')) {
+      imageUrl = imageUrl.replace('http://', 'https://');
+    }
+
     // Return url Cloudinary ke frontend
-    return NextResponse.json({ url: result.url });
+    return NextResponse.json({ url: imageUrl });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: error.message || "Upload gambar gagal" }, { status: 500 });
