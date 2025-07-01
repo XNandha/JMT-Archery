@@ -99,14 +99,18 @@ export default function LandingPage() {
   const goToArticle = () => router.push("/frontend/article");
   const goToReview = () => router.push("/frontend/reviews");
 
-      return (
-    <div className="font-san min-h-screen w-full text-lg md:text-xl"> {/* Tambahkan text-lg md:text-xl */}
+  return (
+    <div className="font-san min-h-screen w-full text-lg md:text-xl">
+      {" "}
+      {/* Tambahkan text-lg md:text-xl */}
       <Navbar />
       {/* Hero */}
       <div className="pt-20 pb-24">
         <section className="p-6">
           <h1 className="text-3xl font-bold">JMT Archery</h1>
-          <p className="text-base md:text-lg mb-2">Lorem ipsum dolor sit amet</p>
+          <p className="text-base md:text-lg mb-2">
+            Lorem ipsum dolor sit amet
+          </p>
           <button
             className="bg-black text-white px-6 py-2 rounded text-lg md:text-xl"
             onClick={goToShop}
@@ -165,7 +169,9 @@ export default function LandingPage() {
                   ) : (
                     <div className="w-full h-48 bg-gray-300 mb-4 rounded-lg" />
                   )}
-                  <h3 className="text-2xl font-semibold mb-1">{product.name}</h3>
+                  <h3 className="text-2xl font-semibold mb-1">
+                    {product.name}
+                  </h3>
                   <p className="text-lg text-gray-700 mb-2">
                     {product.description
                       ? product.description.split("\n")[0]
@@ -189,14 +195,26 @@ export default function LandingPage() {
             <h2 className="text-2xl font-semibold mb-2">
               Kelebihan JMT Archery
             </h2>
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="mb-3">
-                <p className="font-bold text-lg">Point {i}</p>
-                <p className="text-lg text-gray-600">
-                  Lorem ipsum dolor sit amet
-                </p>
-              </div>
-            ))}
+            <div className="mb-3">
+              <p className="font-bold text-lg">Konstruksi berbeda</p>
+              <p className="text-lg text-gray-600">
+                Konstruksi berbeda dari yang lain, lokal maupun non lokal
+              </p>  
+            </div>
+            <div className="mb-3">
+              <p className="font-bold text-lg">Bahan aku buatan sendiri</p>
+              <p className="text-lg text-gray-600">
+                Bahan baku bikinan sendiri (Fiber Glass, Carbon, dan Lem bikinan
+                sendiri)
+              </p>
+            </div>
+            <div className="mb-3">
+              <p className="font-bold text-lg">Dapat request bahan</p>
+              <p className="text-lg text-gray-600">
+                Bisa Request Fiber Glass Mix Carbon dan juga bisa hanya
+                Fiber Glass doang
+              </p>
+            </div>
           </div>
           <div className="w-full h-64 bg-gray-200 rounded" />
         </section>
