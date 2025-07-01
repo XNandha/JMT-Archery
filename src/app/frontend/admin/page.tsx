@@ -276,6 +276,23 @@ export default function AdminPage() {
         >
           Transaksi
         </button>
+        <button
+          className="mt-8 px-4 py-2 rounded bg-red-500 text-white font-semibold hover:bg-red-600 transition"
+          onClick={async () => {
+            try {
+              const res = await fetch("/api/auth/logout", { method: "POST" });
+              if (res.ok) {
+                window.location.href = "/frontend/login";
+              } else {
+                alert("Gagal logout. Silakan coba lagi.");
+              }
+            } catch (err) {
+              alert("Terjadi kesalahan saat logout.");
+            }
+          }}
+        >
+          Logout
+        </button>
       </aside>
       {/* Main Content */}
       <main className="flex-1 ml-60 p-8">
