@@ -122,24 +122,16 @@ export default function LandingPage() {
         {/* Banner */}
         <div className="p-6">
           <div
-            className="w-full h-125 bg-gray-200 rounded flex items-center justify-center cursor-pointer relative overflow-hidden"
+            className="w-full h-72 md:h-96 bg-gray-200 rounded flex items-center justify-center cursor-pointer relative overflow-hidden"
             onClick={() => goToDetailedProduct()}
           >
-            {/* Slider sederhana */}
-            {["/banner1.jpg", "/banner2.jpg", "/banner3.jpg"].map(
-              (img, idx) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`Banner ${idx + 1}`}
-                  className={`absolute w-full h-full object-cover transition-opacity duration-500 ${
-                    idx === 0 ? "opacity-100" : "opacity-0"
-                  }`}
-                />
-              )
-            )}
-            <span className="z-10 text-3xl font-bold text-white drop-shadow">
-              Banner Slider
+            <img
+              src="banner/landingBanner.png"
+              alt="Landing Banner"
+              className="w-full h-full object-cover rounded"
+            />
+            <span className="z-10 text-3xl font-bold text-white drop-shadow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              JMT Archery
             </span>
           </div>
         </div>

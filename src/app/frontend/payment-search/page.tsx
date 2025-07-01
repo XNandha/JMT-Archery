@@ -26,6 +26,8 @@ export default function PaymentSearchPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginNotification, setShowLoginNotification] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [showVerify, setShowVerify] = useState(false);
   const router = useRouter();
 
   // Check login status on component mount
@@ -76,6 +78,8 @@ export default function PaymentSearchPage() {
     setLoading(true);
     setError(null);
     setPayment(null);
+    setShowVerify(false);
+    setVerificationCode("");
 
     try {
       let transactionId = searchValue.trim();
@@ -90,20 +94,44 @@ export default function PaymentSearchPage() {
         }
         transactionId = data.payment.transactionId;
       }
-      // Lakukan verifikasi/cek status dengan transactionId
-      const response = await fetch("/api/payment/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transactionId }),
-      });
+      // Cek status pembayaran (tanpa verifikasi)
+      const response = await fetch(`/api/payment?transactionId=${transactionId}`);
       const data = await response.json();
       if (data.success) {
         setPayment(data.payment);
+        setShowVerify(true); // Tampilkan opsi verifikasi jika ingin
       } else {
         setError(data.error || "Pembayaran tidak ditemukan");
       }
     } catch (err: any) {
       setError("Gagal mencari pembayaran");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    if (!payment || !payment.transactionId || !verificationCode.trim()) {
+      setError("Masukkan kode verifikasi");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/payment/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transactionId: payment.transactionId, verificationCode: verificationCode.trim() }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPayment(data.payment);
+        setError(null);
+      } else {
+        setError(data.error || "Verifikasi gagal");
+      }
+    } catch (err: any) {
+      setError("Gagal memverifikasi pembayaran");
     } finally {
       setLoading(false);
     }
@@ -254,20 +282,48 @@ export default function PaymentSearchPage() {
 
             <button
               type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
             >
-              {loading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Mencari...
-                </div>
-              ) : (
-                "Cari Pembayaran"
-              )}
+              Cari Status
             </button>
           </form>
         </div>
+
+        {payment && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 className="text-xl font-bold mb-2">Status Pembayaran</h2>
+            <div className="mb-2">
+              <span className="font-semibold">Transaction ID:</span> {payment.transactionId}
+            </div>
+            <div className="mb-2">
+              <span className="font-semibold">Status:</span> {getStatusText(payment.status)}
+            </div>
+            {/* Tampilkan detail lain sesuai kebutuhan */}
+            {showVerify && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Masukkan Kode Verifikasi (jika ingin verifikasi manual):
+                </label>
+                <input
+                  type="text"
+                  className="border px-3 py-2 rounded w-full mb-2"
+                  value={verificationCode}
+                  onChange={e => setVerificationCode(e.target.value)}
+                  placeholder="Kode Verifikasi"
+                />
+                <button
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                  onClick={handleVerify}
+                  disabled={loading || !verificationCode.trim()}
+                  type="button"
+                >
+                  Verifikasi
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {payment && (
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
