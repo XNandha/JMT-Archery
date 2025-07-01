@@ -78,16 +78,25 @@ export default function PaymentSearchPage() {
     setPayment(null);
 
     try {
+      let transactionId = searchValue.trim();
+      if (searchType === "order") {
+        // Cari payment berdasarkan orderId
+        const res = await fetch(`/api/payment?orderId=${transactionId}`);
+        const data = await res.json();
+        if (!data.success || !data.payment || !data.payment.transactionId) {
+          setError(data.error || "Pembayaran tidak ditemukan untuk Order ID tersebut");
+          setLoading(false);
+          return;
+        }
+        transactionId = data.payment.transactionId;
+      }
+      // Lakukan verifikasi/cek status dengan transactionId
       const response = await fetch("/api/payment/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          [searchType === "transaction" ? "transactionId" : "orderId"]: searchValue.trim(),
-        }),
+        body: JSON.stringify({ transactionId }),
       });
-
       const data = await response.json();
-
       if (data.success) {
         setPayment(data.payment);
       } else {
