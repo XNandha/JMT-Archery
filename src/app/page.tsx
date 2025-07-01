@@ -202,7 +202,7 @@ export default function LandingPage() {
               </p>  
             </div>
             <div className="mb-3">
-              <p className="font-bold text-lg">Bahan aku buatan sendiri</p>
+              <p className="font-bold text-lg">Bahan buatan sendiri</p>
               <p className="text-lg text-gray-600">
                 Bahan baku bikinan sendiri (Fiber Glass, Carbon, dan Lem bikinan
                 sendiri)
