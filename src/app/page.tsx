@@ -261,11 +261,11 @@ export default function LandingPage() {
               </div>
             ) : (
               latestReviews.map((review) => (
-                <div
+              <div
                   key={review.id}
-                  className="border p-4 rounded cursor-pointer hover:bg-gray-100 transition"
-                  onClick={goToReview}
-                >
+                className="border p-4 rounded cursor-pointer hover:bg-gray-100 transition"
+                onClick={goToReview}
+              >
                   <div className="flex items-center gap-1 mb-2">
                     {Array.from({ length: 5 }, (_, index) => (
                       <FaStar
@@ -276,12 +276,12 @@ export default function LandingPage() {
                       />
                     ))}
                   </div>
-                  <p className="text-lg italic mb-2">
+                <p className="text-lg italic mb-2">
                     "{review.comment.length > 100 
                       ? review.comment.substring(0, 100) + "..." 
                       : review.comment}"
-                  </p>
-                  <div className="flex items-center gap-2">
+                </p>
+                <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gray-400 rounded-full overflow-hidden">
                       {review.user.profilePicture ? (
                         <img
@@ -297,7 +297,7 @@ export default function LandingPage() {
                         </div>
                       )}
                     </div>
-                    <div className="text-base">
+                  <div className="text-base">
                       <p className="font-semibold">{review.user.name}</p>
                       <p className="text-gray-500 text-sm">
                         {new Date(review.createdAt).toLocaleDateString("id-ID", {
