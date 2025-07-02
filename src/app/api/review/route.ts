@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
 // POST: Create a new review
 export async function POST(req: NextRequest) {
   try {
-    const { userId, rating, comment, image } = await req.json();
+    const { userId, rating, comment, image, productId } = await req.json();
 
     // Validation
     if (!userId || !rating || !comment) {
@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
     const review = await prisma.review.create({
       data: {
         userId: Number(userId),
+        productId: typeof productId === 'number' ? productId : productId === null ? null : undefined,
         rating: Number(rating),
         comment: comment.trim(),
         image: image || null,
