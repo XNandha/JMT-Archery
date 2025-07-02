@@ -185,6 +185,12 @@ export default function Navbar() {
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("storage"));
     }
+    setTimeout(() => {
+      setIsLoggedIn(false);
+      setUserId(null);
+      setIsAdmin(false);
+      setShowUserMenu(false);
+    }, 0);
     router.push("/frontend/marketplace");
   };
 
