@@ -216,7 +216,7 @@ const ProductPage: React.FC = () => {
   }
 
   return (
-    <div className="font-sans text-gray-900 w-full max-w-none">
+    <div className="font-sans text-gray-900 w-full max-w-none pt-24 pb-16">
       {/* Navbar dengan logo cart dan user/login */}
       <Navbar />
 
@@ -346,7 +346,7 @@ const ProductPage: React.FC = () => {
       )}
 
       {/* Related Products */}
-      <section>
+      <section className="mt-10 mb-10">
         <h3 className="text-xl font-semibold mb-4">Related products</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {related.slice(0, 6).map((prod) => (
@@ -375,7 +375,7 @@ const ProductPage: React.FC = () => {
         </div>
       </section>
       {/* Product Reviews */}
-      <section className="p-6">
+      <section className="p-6 mt-10 mb-10">
         <h3 className="text-xl font-semibold mb-4">Product Reviews</h3>
         <div className="mb-4">
           <button
