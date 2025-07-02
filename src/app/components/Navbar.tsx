@@ -62,7 +62,11 @@ export default function Navbar() {
     };
     checkSession();
     const interval = setInterval(checkSession, 5000);
-    return () => clearInterval(interval);
+    window.addEventListener("storage", checkSession);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("storage", checkSession);
+    };
   }, []);
 
   // Fetch cart count
@@ -178,6 +182,9 @@ export default function Navbar() {
     setUserId(null);
     setIsAdmin(false);
     setShowUserMenu(false);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("storage"));
+    }
     router.push("/frontend/marketplace");
   };
 

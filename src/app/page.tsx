@@ -173,7 +173,7 @@ export default function LandingPage() {
             onClick={() => goToDetailedProduct()}
           >
             <img
-              src="banner/landingBanner.png"
+              src="/banner/landingBanner.png"
               alt="Landing Banner"
               className="w-full h-full object-cover rounded"
             />
