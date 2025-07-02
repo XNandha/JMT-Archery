@@ -80,6 +80,7 @@ const AuthCard = () => {
       }
       if (data.user && data.user.isAdmin) {
         sessionStorage.setItem("isAdmin", "true");
+        console.log("Admin user logged in:", data.user);
       }
       // Simpan data user ke database jika belum ada (opsional, tergantung backend)
       // Jika backend sudah otomatis menyimpan user saat login, bagian ini bisa diabaikan

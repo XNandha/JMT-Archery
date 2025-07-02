@@ -27,6 +27,15 @@ export default function Navbar() {
       const isLoggedInSession = sessionStorage.getItem("isLoggedIn") === "true";
       const uid = sessionStorage.getItem("userId");
       const adminStatus = sessionStorage.getItem("isAdmin") === "true";
+      
+      // Debug logging
+      console.log("Session check:", {
+        isLoggedInSession,
+        adminStatus,
+        uid,
+        loginTime
+      });
+      
       if (isLoggedInSession && loginTime) {
         const now = Date.now();
         const loginTimestamp = parseInt(loginTime, 10);
