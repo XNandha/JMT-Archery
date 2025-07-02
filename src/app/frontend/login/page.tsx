@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Footer from "@/app/components/Footer";
-import Header from "@/app/components/Navbar";
 
 const AuthCard = () => {
   const router = useRouter();
@@ -218,8 +217,6 @@ const AuthCard = () => {
 
   return (
     <div className="min-h-screen flex flex-col justify-between font-sans text-gray-900 w-full max-w-none bg-gray-50">
-      <Header />
-
       <main className="flex flex-col items-center justify-center flex-1 p-4">
         <div
           className={`w-full max-w-sm p-6 border rounded bg-white shadow transition-opacity duration-300 ${
@@ -230,7 +227,7 @@ const AuthCard = () => {
           {isSignIn && !isForgot && (
             <>
               <h1 className="text-2xl font-bold mb-6 text-center">Sign In</h1>
-              <form onSubmit={handleSignIn}>
+              <form onSubmit={handleSignIn} className="space-y-4">
                 <label className="block mb-2 text-sm font-medium">Email</label>
                 <input
                   type="email"
@@ -268,9 +265,16 @@ const AuthCard = () => {
                 )}
                 <button
                   type="submit"
-                  className="w-full bg-black text-white py-2 rounded mb-2"
+                  className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
                 >
                   Sign In
+                </button>
+                <button
+                  type="button"
+                  className="w-full mt-2 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 transition"
+                  onClick={() => router.push("/frontend/marketplace")}
+                >
+                  Cancel
                 </button>
               </form>
               <div className="flex justify-between mt-2">
