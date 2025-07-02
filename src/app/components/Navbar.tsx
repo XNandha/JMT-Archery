@@ -146,7 +146,12 @@ export default function Navbar() {
   }, [search]);
 
   const goToShop = () => router.push("/frontend/marketplace");
-  const goToLogin = () => router.push("/frontend/login");
+  const goToLogin = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("lastPageBeforeLogin", window.location.pathname);
+    }
+    router.push("/frontend/login");
+  };
   const goToProfile = () => {
     if (
       typeof window !== "undefined" &&

@@ -513,7 +513,10 @@ const ReviewsPage = () => {
               </p>
               {!isLoggedIn && (
                 <button
-                  onClick={() => router.push("/frontend/login")}
+                  onClick={() => {
+                    if (typeof window !== "undefined") sessionStorage.setItem("lastPageBeforeLogin", window.location.pathname);
+                    router.push("/frontend/login");
+                  }}
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Login untuk Review

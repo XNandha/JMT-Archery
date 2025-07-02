@@ -131,6 +131,7 @@ const Marketplace = () => {
     if (!loggedIn || !loginTime || now - parseInt(loginTime, 10) > 3600000) {
       sessionStorage.removeItem("isLoggedIn");
       sessionStorage.removeItem("loginTime");
+      if (typeof window !== "undefined") sessionStorage.setItem("lastPageBeforeLogin", window.location.pathname);
       if (id)
         sessionStorage.setItem(
           "redirectAfterLogin",
@@ -147,6 +148,7 @@ const Marketplace = () => {
   // Tambahkan ke cart (langsung ke backend)
   const addToCart = async (product: Product) => {
     if (!isLoggedIn || !userId) {
+      if (typeof window !== "undefined") sessionStorage.setItem("lastPageBeforeLogin", window.location.pathname);
       router.push("/frontend/login");
       return;
     }

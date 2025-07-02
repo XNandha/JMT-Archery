@@ -156,7 +156,7 @@ export default function LandingPage() {
         <section className="p-6">
           <h1 className="text-3xl font-bold">JMT Archery</h1>
           <p className="text-base md:text-lg mb-2">
-            Kebutuhan alat panahanmu
+            Lorem ipsum dolor sit amet
           </p>
           <button
             className="bg-black text-white px-6 py-2 rounded text-lg md:text-xl"
@@ -177,6 +177,9 @@ export default function LandingPage() {
               alt="Landing Banner"
               className="w-full h-full object-cover rounded"
             />
+            <span className="z-10 text-3xl font-bold text-white drop-shadow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              JMT Archery
+            </span>
           </div>
         </div>
 
@@ -222,6 +225,14 @@ export default function LandingPage() {
                 </div>
               ))
             )}
+          </div>
+          <div className="mt-4 text-center">
+            <button
+              className="text-blue-600 hover:underline text-lg font-medium"
+              onClick={goToShop}
+            >
+              See More Produk
+            </button>
           </div>
         </section>
 
@@ -278,7 +289,7 @@ export default function LandingPage() {
               </div>
             ) : (
               latestReviews.map((review) => (
-                <div key={review.id} className="border p-4 rounded cursor-pointer hover:bg-gray-100 transition">
+                <div key={review.id} className="border p-4 rounded cursor-pointer hover:bg-gray-100 transition" onClick={goToReview}>
                   <div className="flex items-center gap-1 mb-2">
                     {Array.from({ length: 5 }, (_, index) => (
                       <FaStar
@@ -325,6 +336,14 @@ export default function LandingPage() {
                 </div>
               ))
             )}
+          </div>
+          <div className="mt-4 text-center">
+            <button
+              className="text-blue-600 hover:underline text-lg font-medium"
+              onClick={goToReview}
+            >
+              See More Review
+            </button>
           </div>
         </section>
         {/* Modal Add Review */}
