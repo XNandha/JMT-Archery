@@ -32,6 +32,45 @@ interface Transaction {
   }[];
 }
 
+interface Payment {
+  id: number;
+  orderId: number;
+  amount: number;
+  method: string;
+  bank?: string;
+  status: string;
+  transactionId?: string;
+  verificationCode?: string;
+  paidAt?: Date;
+  expiresAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  order: {
+    id: number;
+    userId: number;
+    totalAmount: number;
+    status: string;
+    createdAt: Date;
+    user: {
+      id: number;
+      name: string;
+      email: string;
+    };
+    items: {
+      id: number;
+      productId: number;
+      quantity: number;
+      price: number;
+      product: {
+        id: number;
+        name: string;
+        price: number;
+        image: string;
+      };
+    }[];
+  };
+}
+
 export default function AdminPage() {
   const [product, setProduct] = useState<Product[]>([]);
   const [form, setForm] = useState<Partial<Product>>({});
@@ -39,10 +78,11 @@ export default function AdminPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<"product" | "transaction">(
+  const [activeMenu, setActiveMenu] = useState<"product" | "transaction" | "payment">(
     "product"
   );
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showStockModal, setShowStockModal] = useState<null | Product>(null);
   const [addStockValue, setAddStockValue] = useState<number>(0);
@@ -74,9 +114,23 @@ export default function AdminPage() {
       alert("Gagal memuat data transaksi.");
     }
   };
+
+  const fetchPayments = async () => {
+    try {
+      const res = await fetch("/api/payment/all");
+      if (!res.ok) throw new Error("Gagal mengambil data pembayaran");
+      const data = await res.json();
+      setPayments(data.payments || []);
+    } catch (error) {
+      console.error(error);
+      alert("Gagal memuat data pembayaran.");
+    }
+  };
+
   useEffect(() => {
     if (activeMenu === "product") fetchProduct();
     if (activeMenu === "transaction") fetchTransactions();
+    if (activeMenu === "payment") fetchPayments();
   }, [activeMenu]);
 
   const handleChange = (
@@ -249,6 +303,41 @@ export default function AdminPage() {
     }
   };
 
+  // Helper function untuk status pembayaran
+  const getPaymentStatusText = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Menunggu";
+      case "processing":
+        return "Diproses";
+      case "success":
+        return "Berhasil";
+      case "failed":
+        return "Gagal";
+      case "expired":
+        return "Kadaluarsa";
+      default:
+        return status;
+    }
+  };
+
+  const getPaymentStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "processing":
+        return "bg-blue-100 text-blue-800";
+      case "success":
+        return "bg-green-100 text-green-800";
+      case "failed":
+        return "bg-red-100 text-red-800";
+      case "expired":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
   if (!mounted) return null;
 
   return (
@@ -275,6 +364,22 @@ export default function AdminPage() {
           onClick={() => setActiveMenu("transaction")}
         >
           Transaksi
+        </button>
+        <button
+          className={`text-left px-4 py-2 rounded transition font-semibold ${
+            activeMenu === "payment"
+              ? "bg-black text-white"
+              : "hover:bg-gray-200"
+          }`}
+          onClick={() => setActiveMenu("payment")}
+        >
+          Status Pembayaran
+        </button>
+        <button
+          className="mt-4 px-4 py-2 rounded bg-green-600 text-white font-semibold hover:bg-green-700 transition"
+          onClick={() => window.location.href = "/frontend/marketplace"}
+        >
+          Lihat Marketplace
         </button>
         <button
           className="mt-8 px-4 py-2 rounded bg-red-500 text-white font-semibold hover:bg-red-600 transition"
@@ -540,6 +645,152 @@ export default function AdminPage() {
                               </li>
                             ))}
                           </ul>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
+        {activeMenu === "payment" && (
+          <>
+            <h1 className="text-2xl font-bold mb-6">Status Pembayaran</h1>
+            
+                        {/* Payment Statistics */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
+                <div className="bg-white p-4 rounded-lg shadow border">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {payments.filter(p => p.status === "pending").length}
+                  </div>
+                  <div className="text-sm text-gray-600">Menunggu Pembayaran</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow border">
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {payments.filter(p => p.status === "processing").length}
+                  </div>
+                  <div className="text-sm text-gray-600">Sedang Diproses</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow border">
+                  <div className="text-2xl font-bold text-green-600">
+                    {payments.filter(p => p.status === "success").length}
+                  </div>
+                  <div className="text-sm text-gray-600">Pembayaran Berhasil</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow border">
+                  <div className="text-2xl font-bold text-red-600">
+                    {payments.filter(p => p.status === "failed" || p.status === "expired").length}
+                  </div>
+                  <div className="text-sm text-gray-600">Pembayaran Gagal</div>
+                </div>
+              </div>
+              <button
+                onClick={fetchPayments}
+                className="ml-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              >
+                Refresh Data
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full border">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="p-2 border">ID Pembayaran</th>
+                    <th className="p-2 border">Order ID</th>
+                    <th className="p-2 border">Customer</th>
+                    <th className="p-2 border">Metode</th>
+                    <th className="p-2 border">Jumlah</th>
+                    <th className="p-2 border">Status</th>
+                    <th className="p-2 border">Transaction ID</th>
+                    <th className="p-2 border">Tanggal</th>
+                    <th className="p-2 border">Produk</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payments.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="text-center p-4 text-gray-500">
+                        Tidak ada data pembayaran.
+                      </td>
+                    </tr>
+                  ) : (
+                    payments.map((payment) => (
+                      <tr key={payment.id}>
+                        <td className="p-2 border">{payment.id}</td>
+                        <td className="p-2 border">{payment.orderId}</td>
+                        <td className="p-2 border">
+                          <div>
+                            <div className="font-semibold">{payment.order.user.name || "-"}</div>
+                            <div className="text-sm text-gray-500">{payment.order.user.email}</div>
+                          </div>
+                        </td>
+                        <td className="p-2 border">
+                          <div>
+                            <div className="font-semibold">{payment.method}</div>
+                            {payment.bank && (
+                              <div className="text-sm text-gray-500">{payment.bank}</div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-2 border">
+                          {new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                          }).format(payment.amount)}
+                        </td>
+                        <td className="p-2 border">
+                          <span className={`inline-flex px-2 py-1 rounded text-sm font-medium ${getPaymentStatusColor(payment.status)}`}>
+                            {getPaymentStatusText(payment.status)}
+                          </span>
+                        </td>
+                        <td className="p-2 border">
+                          <div className="text-sm">
+                            {payment.transactionId || "-"}
+                          </div>
+                          {payment.verificationCode && (
+                            <div className="text-xs text-gray-500">
+                              Kode: {payment.verificationCode}
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-2 border">
+                          <div className="text-sm">
+                            {new Date(payment.createdAt).toLocaleString("id-ID")}
+                          </div>
+                          {payment.paidAt && (
+                            <div className="text-xs text-gray-500">
+                              Dibayar: {new Date(payment.paidAt).toLocaleString("id-ID")}
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-2 border">
+                          <div className="max-w-xs">
+                            {payment.order.items.map((item) => (
+                              <div key={item.id} className="flex items-center gap-2 mb-2">
+                                {item.product.image && (
+                                  <img
+                                    src={item.product.image}
+                                    alt={item.product.name}
+                                    className="w-8 h-8 object-cover rounded border"
+                                  />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-sm font-medium truncate">
+                                    {item.product.name}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {item.quantity}x @ {new Intl.NumberFormat("id-ID", {
+                                      style: "currency",
+                                      currency: "IDR",
+                                    }).format(item.price)}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </td>
                       </tr>
                     ))

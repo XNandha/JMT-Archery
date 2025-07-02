@@ -78,6 +78,9 @@ const AuthCard = () => {
       if (data.user && data.user.profilePic) {
         sessionStorage.setItem("profilePic", data.user.profilePic);
       }
+      if (data.user && data.user.isAdmin) {
+        sessionStorage.setItem("isAdmin", "true");
+      }
       // Simpan data user ke database jika belum ada (opsional, tergantung backend)
       // Jika backend sudah otomatis menyimpan user saat login, bagian ini bisa diabaikan
 

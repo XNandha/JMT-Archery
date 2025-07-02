@@ -10,6 +10,7 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -25,21 +26,26 @@ export default function Navbar() {
       const loginTime = sessionStorage.getItem("loginTime");
       const isLoggedInSession = sessionStorage.getItem("isLoggedIn") === "true";
       const uid = sessionStorage.getItem("userId");
+      const adminStatus = sessionStorage.getItem("isAdmin") === "true";
       if (isLoggedInSession && loginTime) {
         const now = Date.now();
         const loginTimestamp = parseInt(loginTime, 10);
         if (now - loginTimestamp > 3600000) {
           sessionStorage.removeItem("isLoggedIn");
           sessionStorage.removeItem("loginTime");
+          sessionStorage.removeItem("isAdmin");
           setIsLoggedIn(false);
           setUserId(null);
+          setIsAdmin(false);
         } else {
           setIsLoggedIn(true);
           setUserId(uid ? Number(uid) : null);
+          setIsAdmin(adminStatus);
         }
       } else {
         setIsLoggedIn(false);
         setUserId(null);
+        setIsAdmin(false);
       }
       // Ambil profilePic jika ada
       const pic = sessionStorage.getItem("profilePic");
@@ -143,6 +149,10 @@ export default function Navbar() {
     router.push("/frontend/payment-status");
   };
 
+  const goToAdmin = () => {
+    router.push("/frontend/admin");
+  };
+
   const goToProductDetail = (id: number) => {
     setShowDropdown(false);
     setSearch("");
@@ -154,8 +164,10 @@ export default function Navbar() {
     sessionStorage.removeItem("loginTime");
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("profilePic");
+    sessionStorage.removeItem("isAdmin");
     setIsLoggedIn(false);
     setUserId(null);
+    setIsAdmin(false);
     setShowUserMenu(false);
     router.push("/frontend/marketplace");
   };
@@ -271,6 +283,20 @@ export default function Navbar() {
         )}
       </div>
       <div className="flex items-center gap-4">
+        {/* Manage Product - Only visible to admin users */}
+        {isLoggedIn && isAdmin && (
+          <button
+            onClick={goToAdmin}
+            className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition"
+            title="Kelola Produk"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+            </svg>
+            <span className="hidden md:inline">Kelola Produk</span>
+          </button>
+        )}
+
         {/* Payment Status - Hidden on landing page */}
         {!isLandingPage && (
           <button
