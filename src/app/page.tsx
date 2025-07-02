@@ -156,7 +156,7 @@ export default function LandingPage() {
         <section className="p-6">
           <h1 className="text-3xl font-bold">JMT Archery</h1>
           <p className="text-base md:text-lg mb-2">
-            Lorem ipsum dolor sit amet
+            Kebutuhan alat panahanmu
           </p>
           <button
             className="bg-black text-white px-6 py-2 rounded text-lg md:text-xl"
@@ -177,9 +177,6 @@ export default function LandingPage() {
               alt="Landing Banner"
               className="w-full h-full object-cover rounded"
             />
-            <span className="z-10 text-3xl font-bold text-white drop-shadow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-              JMT Archery
-            </span>
           </div>
         </div>
 
@@ -263,7 +260,11 @@ export default function LandingPage() {
               </p>
             </div>
           </div>
-          <div className="w-full h-64 bg-gray-200 rounded" />
+          <img
+            src="/banner/bow.jpg"
+            alt="Bow"
+            className="w-full h-64 object-cover rounded"
+          />
         </section>
 
         {/* User Review */}
