@@ -192,6 +192,7 @@ export default function Navbar() {
       setShowUserMenu(false);
     }, 0);
     router.push("/frontend/marketplace");
+    window.location.reload();
   };
 
   return (
