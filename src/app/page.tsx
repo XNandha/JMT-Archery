@@ -5,6 +5,7 @@ import "@/app/globals.css";
 import { useRouter } from "next/navigation";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import { FaStar } from "react-icons/fa";
 
 interface Product {
   id: number;
@@ -15,9 +16,25 @@ interface Product {
   createdAt?: string;
 }
 
+interface Review {
+  id: number;
+  userId: number;
+  rating: number;
+  comment: string;
+  image?: string;
+  createdAt: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    profilePicture?: string;
+  };
+}
+
 export default function LandingPage() {
   const router = useRouter();
   const [latestProducts, setLatestProducts] = useState<Product[]>([]);
+  const [latestReviews, setLatestReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -52,6 +69,24 @@ export default function LandingPage() {
       }
     }
     fetchLatestProducts();
+  }, []);
+
+  // Ambil review terbaru dari database
+  useEffect(() => {
+    async function fetchLatestReviews() {
+      try {
+        const res = await fetch("/api/review/latest");
+        if (res.ok) {
+          const data = await res.json();
+          setLatestReviews(data.reviews || []);
+        } else {
+          setLatestReviews([]);
+        }
+      } catch {
+        setLatestReviews([]);
+      }
+    }
+    fetchLatestReviews();
   }, []);
 
   useEffect(() => {
@@ -215,24 +250,67 @@ export default function LandingPage() {
         <section className="p-6">
           <h2 className="text-2xl font-semibold mb-4">User Review</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="border p-4 rounded cursor-pointer hover:bg-gray-100 transition"
-                onClick={goToReview}
-              >
-                <p className="text-lg italic mb-2">
-                  "A sample review testimonial {i}"
-                </p>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gray-400 rounded-full" />
-                  <div className="text-base">
-                    <p>Nama</p>
-                    <p className="text-gray-500">Description</p>
+            {loading ? (
+              <div className="col-span-3 text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                <p className="text-gray-600">Memuat review...</p>
+              </div>
+            ) : latestReviews.length === 0 ? (
+              <div className="col-span-3 text-center py-8">
+                <p className="text-gray-600">Belum ada review</p>
+              </div>
+            ) : (
+              latestReviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="border p-4 rounded cursor-pointer hover:bg-gray-100 transition"
+                  onClick={goToReview}
+                >
+                  <div className="flex items-center gap-1 mb-2">
+                    {Array.from({ length: 5 }, (_, index) => (
+                      <FaStar
+                        key={index}
+                        className={`w-4 h-4 ${
+                          index < review.rating ? "text-yellow-400" : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-lg italic mb-2">
+                    "{review.comment.length > 100 
+                      ? review.comment.substring(0, 100) + "..." 
+                      : review.comment}"
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gray-400 rounded-full overflow-hidden">
+                      {review.user.profilePicture ? (
+                        <img
+                          src={review.user.profilePicture}
+                          alt={review.user.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                          <span className="text-gray-600 font-semibold text-xs">
+                            {review.user.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-base">
+                      <p className="font-semibold">{review.user.name}</p>
+                      <p className="text-gray-500 text-sm">
+                        {new Date(review.createdAt).toLocaleDateString("id-ID", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric"
+                        })}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </section>
       </div>
