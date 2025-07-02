@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import { FaStar } from "react-icons/fa";
+import ReviewModal from "./components/ReviewModal";
 
 interface Product {
   id: number;
@@ -37,6 +38,7 @@ export default function LandingPage() {
   const [latestReviews, setLatestReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   // Cek login saat mount
   useEffect(() => {
@@ -133,6 +135,16 @@ export default function LandingPage() {
 
   const goToArticle = () => router.push("/frontend/article");
   const goToReview = () => router.push("/frontend/reviews");
+
+  const refreshReviews = async () => {
+    try {
+      const res = await fetch("/api/review?productId=null");
+      if (res.ok) {
+        const data = await res.json();
+        setLatestReviews(data.reviews || []);
+      }
+    } catch {}
+  };
 
   return (
     <div className="font-san min-h-screen w-full text-lg md:text-xl">
@@ -249,6 +261,14 @@ export default function LandingPage() {
         {/* User Review */}
         <section className="p-6">
           <h2 className="text-2xl font-semibold mb-4">User Review</h2>
+          <div className="mb-4">
+            <button
+              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+              onClick={() => setShowReviewModal(true)}
+            >
+              Add Review
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {loading ? (
               <div className="col-span-3 text-center py-8">
@@ -261,27 +281,24 @@ export default function LandingPage() {
               </div>
             ) : (
               latestReviews.map((review) => (
-              <div
-                  key={review.id}
-                className="border p-4 rounded cursor-pointer hover:bg-gray-100 transition"
-                onClick={goToReview}
-              >
+                <div key={review.id} className="border p-4 rounded cursor-pointer hover:bg-gray-100 transition">
                   <div className="flex items-center gap-1 mb-2">
                     {Array.from({ length: 5 }, (_, index) => (
                       <FaStar
                         key={index}
-                        className={`w-4 h-4 ${
-                          index < review.rating ? "text-yellow-400" : "text-gray-300"
-                        }`}
+                        className={`w-4 h-4 ${index < review.rating ? "text-yellow-400" : "text-gray-300"}`}
                       />
                     ))}
                   </div>
-                <p className="text-lg italic mb-2">
+                  <p className="text-lg italic mb-2">
                     "{review.comment.length > 100 
                       ? review.comment.substring(0, 100) + "..." 
                       : review.comment}"
-                </p>
-                <div className="flex items-center gap-2">
+                  </p>
+                  {review.image && (
+                    <img src={review.image} alt="Review" className="w-24 h-24 object-cover rounded mb-2" />
+                  )}
+                  <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gray-400 rounded-full overflow-hidden">
                       {review.user.profilePicture ? (
                         <img
@@ -297,7 +314,7 @@ export default function LandingPage() {
                         </div>
                       )}
                     </div>
-                  <div className="text-base">
+                    <div className="text-base">
                       <p className="font-semibold">{review.user.name}</p>
                       <p className="text-gray-500 text-sm">
                         {new Date(review.createdAt).toLocaleDateString("id-ID", {
@@ -313,6 +330,14 @@ export default function LandingPage() {
             )}
           </div>
         </section>
+        {/* Modal Add Review */}
+        {showReviewModal && (
+          <ReviewModal
+            onClose={() => setShowReviewModal(false)}
+            onSuccess={refreshReviews}
+            productId={null}
+          />
+        )}
       </div>
       <Footer />
     </div>

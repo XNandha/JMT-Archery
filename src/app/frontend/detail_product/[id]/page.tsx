@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
+import ReviewModal from "@/app/components/ReviewModal";
+import { FaStar } from "react-icons/fa";
 
 interface Product {
   id: number;
@@ -22,6 +24,9 @@ const ProductPage: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedQty, setSelectedQty] = useState<number | string>(1);
   const [userId, setUserId] = useState<number | null>(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [productReviews, setProductReviews] = useState<any[]>([]);
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -63,6 +68,17 @@ const ProductPage: React.FC = () => {
         setRelated(data.filter((p: Product) => String(p.id) !== id))
       );
   }, [id]);
+
+  useEffect(() => {
+    if (product && product.id) {
+      fetch(`/api/reviews/${product.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setProductReviews(data);
+          setLoadingReviews(false);
+        });
+    }
+  }, [product]);
 
   // Handler untuk tombol utama
   const handleShowPopup = () => {
@@ -155,6 +171,17 @@ const ProductPage: React.FC = () => {
       alert(error.message || "Gagal menambah ke keranjang.");
     } finally {
       setAdding(false);
+    }
+  };
+
+  const refreshProductReviews = () => {
+    if (product && product.id) {
+      fetch(`/api/reviews/${product.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setProductReviews(data);
+          setLoadingReviews(false);
+        });
     }
   };
 
@@ -325,6 +352,74 @@ const ProductPage: React.FC = () => {
           ))}
         </div>
       </section>
+      {/* Product Reviews */}
+      <section className="p-6">
+        <h3 className="text-xl font-semibold mb-4">Product Reviews</h3>
+        <div className="mb-4">
+          <button
+            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+            onClick={() => setShowReviewModal(true)}
+          >
+            Add Review
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {loadingReviews ? (
+            <div className="col-span-2 text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p className="text-gray-600">Memuat review...</p>
+            </div>
+          ) : productReviews.length === 0 ? (
+            <div className="col-span-2 text-center py-8">
+              <p className="text-gray-600">Belum ada review untuk produk ini</p>
+            </div>
+          ) : (
+            productReviews.map((review) => (
+              <div key={review.id} className="border p-4 rounded mb-2 bg-white shadow">
+                <div className="flex items-center gap-1 mb-2">
+                  {Array.from({ length: 5 }, (_, idx) => (
+                    <FaStar
+                      key={idx}
+                      className={`w-4 h-4 ${idx < review.rating ? "text-yellow-400" : "text-gray-300"}`}
+                    />
+                  ))}
+                </div>
+                <p className="text-base italic mb-2">
+                  "{review.comment.length > 100 ? review.comment.substring(0, 100) + "..." : review.comment}"
+                </p>
+                {review.image && (
+                  <img src={review.image} alt="Review" className="w-24 h-24 object-cover rounded mb-2" />
+                )}
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="w-8 h-8 bg-gray-400 rounded-full overflow-hidden">
+                    {review.user?.profilePicture ? (
+                      <img src={review.user.profilePicture} alt={review.user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                        <span className="text-gray-600 font-semibold text-xs">{review.user?.name?.charAt(0).toUpperCase()}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-base">
+                    <p className="font-semibold">{review.user?.name}</p>
+                    <p className="text-gray-500 text-sm">
+                      {new Date(review.createdAt).toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+      {/* Modal Add Review */}
+      {showReviewModal && (
+        <ReviewModal
+          onClose={() => setShowReviewModal(false)}
+          onSuccess={refreshProductReviews}
+          productId={product?.id}
+        />
+      )}
 
       {/* Footer */}
       <Footer />

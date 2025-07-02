@@ -2,28 +2,42 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // GET: Get all reviews with user information
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const productId = searchParams.get("productId");
   try {
-    const reviews = await prisma.review.findMany({
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            profilePicture: true,
+    let reviews;
+    if (productId) {
+      reviews = await prisma.review.findMany({
+        where: { productId: Number(productId) },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              profilePicture: true,
+            },
           },
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      reviews,
-    });
+        orderBy: { createdAt: "desc" },
+      });
+    } else {
+      reviews = await prisma.review.findMany({
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              profilePicture: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    }
+    return NextResponse.json({ success: true, reviews });
   } catch (error) {
     console.error("Error fetching reviews:", error);
     return NextResponse.json(
