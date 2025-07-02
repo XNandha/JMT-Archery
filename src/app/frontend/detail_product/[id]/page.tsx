@@ -71,10 +71,21 @@ const ProductPage: React.FC = () => {
 
   useEffect(() => {
     if (product && product.id) {
-      fetch(`/api/reviews/${product.id}`)
-        .then((res) => res.json())
+      fetch(`/api/review?productId=${product.id}`)
+        .then((res) => {
+          if (!res.ok) {
+            setProductReviews([]);
+            setLoadingReviews(false);
+            return null;
+          }
+          return res.json();
+        })
         .then((data) => {
-          setProductReviews(data);
+          if (data && data.reviews) {
+            setProductReviews(data.reviews);
+          } else {
+            setProductReviews([]);
+          }
           setLoadingReviews(false);
         });
     }
@@ -176,10 +187,21 @@ const ProductPage: React.FC = () => {
 
   const refreshProductReviews = () => {
     if (product && product.id) {
-      fetch(`/api/reviews/${product.id}`)
-        .then((res) => res.json())
+      fetch(`/api/review?productId=${product.id}`)
+        .then((res) => {
+          if (!res.ok) {
+            setProductReviews([]);
+            setLoadingReviews(false);
+            return null;
+          }
+          return res.json();
+        })
         .then((data) => {
-          setProductReviews(data);
+          if (data && data.reviews) {
+            setProductReviews(data.reviews);
+          } else {
+            setProductReviews([]);
+          }
           setLoadingReviews(false);
         });
     }
