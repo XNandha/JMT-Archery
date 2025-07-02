@@ -417,7 +417,7 @@ const ProductPage: React.FC = () => {
         <ReviewModal
           onClose={() => setShowReviewModal(false)}
           onSuccess={refreshProductReviews}
-          productId={product?.id}
+          productId={product?.id ?? null}
         />
       )}
 
