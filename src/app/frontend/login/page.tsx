@@ -10,6 +10,7 @@ const AuthCard = () => {
   const [fade, setFade] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
   const [isReset, setIsReset] = useState(false);
+  const [lastPage, setLastPage] = useState<string | null>(null);
 
   // Sign In state
   const [email, setEmail] = useState("");
@@ -39,6 +40,14 @@ const AuthCard = () => {
       setEmail(localStorage.getItem("rememberEmail") || "");
       setPassword(localStorage.getItem("rememberPassword") || "");
       setRememberMe(localStorage.getItem("rememberMe") === "true");
+    }
+  }, []);
+
+  // Ambil halaman terakhir dari sessionStorage (jika ada)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const ref = sessionStorage.getItem("lastPageBeforeLogin");
+      setLastPage(ref);
     }
   }, []);
 
@@ -215,6 +224,15 @@ const AuthCard = () => {
     }
   };
 
+  // Fungsi untuk tombol Cancel
+  const handleCancel = () => {
+    if (lastPage) {
+      router.push(lastPage);
+    } else {
+      router.push("/frontend/marketplace");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-between font-sans text-gray-900 w-full max-w-none bg-gray-50">
       <main className="flex flex-col items-center justify-center flex-1 p-4">
@@ -272,7 +290,7 @@ const AuthCard = () => {
                 <button
                   type="button"
                   className="w-full mt-2 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 transition"
-                  onClick={() => router.push("/frontend/marketplace")}
+                  onClick={handleCancel}
                 >
                   Cancel
                 </button>
