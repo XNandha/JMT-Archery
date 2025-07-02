@@ -54,6 +54,10 @@ export default function LandingPage() {
       setLoading(true);
       try {
         const res = await fetch("/api/product");
+        if (!res.ok) {
+          setLatestProducts([]);
+          return;
+        }
         const data = await res.json();
         // Urutkan dari yang terbaru (createdAt DESC), ambil 3 teratas
         const sorted = [...data]
@@ -78,12 +82,12 @@ export default function LandingPage() {
     async function fetchLatestReviews() {
       try {
         const res = await fetch("/api/review/latest");
-        if (res.ok) {
-          const data = await res.json();
-          setLatestReviews(data.reviews || []);
-        } else {
+        if (!res.ok) {
           setLatestReviews([]);
+          return;
         }
+        const data = await res.json();
+        setLatestReviews(data.reviews || []);
       } catch {
         setLatestReviews([]);
       }
@@ -263,7 +267,7 @@ export default function LandingPage() {
           <img
             src="/banner/bow.jpg"
             alt="Bow"
-            className="w-full h-64 object-cover rounded"
+            className="w-full h-40 md:h-64 object-cover rounded"
           />
         </section>
 
@@ -305,7 +309,7 @@ export default function LandingPage() {
                       : review.comment}"
                   </p>
                   {review.image && (
-                    <img src={review.image} alt="Review" className="w-24 h-24 object-cover rounded mb-2" />
+                    <img src={review.image} alt="Review" className="w-20 h-20 md:w-24 md:h-24 object-cover rounded mb-2" />
                   )}
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gray-400 rounded-full overflow-hidden">

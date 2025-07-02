@@ -206,7 +206,7 @@ const ProductPage: React.FC = () => {
               <img
                 src={product.image}
                 alt={product.name}
-                className="object-cover w-full h-full"
+                className="w-full h-40 md:h-64 object-cover rounded"
               />
             ) : (
               <span className="text-gray-400">[Image]</span>
@@ -388,7 +388,7 @@ const ProductPage: React.FC = () => {
                   "{review.comment.length > 100 ? review.comment.substring(0, 100) + "..." : review.comment}"
                 </p>
                 {review.image && (
-                  <img src={review.image} alt="Review" className="w-24 h-24 object-cover rounded mb-2" />
+                  <img src={review.image} alt="Review" className="w-20 h-20 md:w-24 md:h-24 object-cover rounded mb-2" />
                 )}
                 <div className="flex items-center gap-2 mt-2">
                   <div className="w-8 h-8 bg-gray-400 rounded-full overflow-hidden">
