@@ -69,6 +69,16 @@ export default function Navbar() {
     };
   }, []);
 
+  // Paksa sessionStorage isAdmin ke 'false' jika user bukan admin
+  if (typeof window !== "undefined") {
+    const isLoggedInSession = sessionStorage.getItem("isLoggedIn") === "true";
+    const isAdminSession = sessionStorage.getItem("isAdmin");
+    if (isLoggedInSession && isAdminSession !== "true") {
+      sessionStorage.setItem("isAdmin", "false");
+    }
+    console.log("Navbar sessionStorage isAdmin:", sessionStorage.getItem("isAdmin"));
+  }
+
   // Fetch cart count
   useEffect(() => {
     const fetchCartCount = async () => {
@@ -195,6 +205,15 @@ export default function Navbar() {
     window.location.reload();
   };
 
+  // Paksa sinkronisasi sessionStorage dan state pada setiap render
+  if (typeof window !== "undefined") {
+    const isLoggedInSession = sessionStorage.getItem("isLoggedIn") === "true";
+    const isAdminSession = sessionStorage.getItem("isAdmin") === "true";
+    if (!isLoggedInSession || !isAdminSession) {
+      sessionStorage.setItem("isAdmin", "false");
+    }
+  }
+
   return (
     <div className="flex items-center justify-between px-6 py-4 bg-white shadow fixed top-0 left-0 w-full z-50">
       <div className="text-2xl font-bold cursor-pointer" onClick={goToShop}>
@@ -307,7 +326,7 @@ export default function Navbar() {
       </div>
       <div className="flex items-center gap-4">
         {/* Manage Product - Only visible to admin users */}
-        {isLoggedIn && isAdmin && (
+        {isLoggedIn && isAdmin === true && (
           <button
             onClick={goToAdmin}
             className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition"
